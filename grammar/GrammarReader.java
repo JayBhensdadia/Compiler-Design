@@ -31,6 +31,9 @@ public class GrammarReader {
                 String lhs = parts[0];
                 String rhs = parts[1];
 
+                lhs.trim();
+                rhs.trim();
+
                 //if grammar does not have lhs non terminal then add it
                 if(!grammar.nonTerminals.contains(lhs)){
                     grammar.nonTerminals.add(lhs);
@@ -39,7 +42,7 @@ public class GrammarReader {
                 //now rhs
                 //first split by '|'
 
-                rhs.trim();
+                //rhs.trim();
                 String[] rhsProductions = rhs.split("\\|");
 
                 for(String str : rhsProductions){
