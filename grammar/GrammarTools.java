@@ -2,6 +2,7 @@ package grammar;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Arrays;
 
 public class GrammarTools {
@@ -83,6 +84,7 @@ public class GrammarTools {
         grammar.productions.addAll(productionsToBeAdded);
         grammar.productions.removeAll(productionsToBeDeleted);
         grammar.nonTerminals.addAll(newNonTerminals);
+        grammar.terminals.add("ε");
 
     }
 
@@ -124,13 +126,17 @@ public class GrammarTools {
             ArrayList<String> tempBeta = new ArrayList<>();
             ArrayList<String> tempGamma = new ArrayList<>();
 
+            if (p.rhs.length<2) {
+                continue;
+            }
+
             for (int i = 0; i < p.rhs.length; i++) {
                 String str = p.rhs[i];
 
                 // now compare characters of tempAlpha and str
 
                 //if str contains tempAlpha then add it to beta array
-                if (str.contains(tempAlpha)) {
+                if (str.contains(tempAlpha) && tempAlpha.length()>0) {
                     if(str.equals(tempAlpha)){ tempBeta.add(str); }
                     else{ tempBeta.add(str.substring(tempAlpha.length()-1)); }
                     
@@ -176,7 +182,9 @@ public class GrammarTools {
 
             //now check if tempBeta is empty than production
             //does not need left factoring
-            if (!tempBeta.isEmpty()) {
+            if (!tempBeta.isEmpty() && tempBeta.size()>1) {
+
+                
                 
                 if(!tempAlpha.isEmpty()){ alpha = tempAlpha; }
                 gamma = tempGamma;
@@ -225,5 +233,64 @@ public class GrammarTools {
         grammar.productions.removeAll(productionsToBeDeleted);
         grammar.nonTerminals.addAll(newNonTerminals);
 
+    }
+
+
+
+    //FIRST set
+    public static HashMap<String,HashSet<String>> computeFirstSet(Grammar grammar){
+
+        HashMap<String,HashSet<String>> ans = new HashMap<>();
+        for (String nonTerminal : grammar.nonTerminals) {
+            ans.put(nonTerminal, computeFirst(grammar, nonTerminal));
+        }
+
+        // //verifying
+        for (String nonTerminal : ans.keySet()) {
+            if(ans.get(nonTerminal).contains("ε")){
+
+                for (Production p : grammar.productions) {
+                    
+                    for (String str : p.rhs) {
+                        if(str.substring(0, 1).equals(nonTerminal)){
+                            ans.get(p.lhs).addAll(computeFirst(grammar, str.substring(1, 2)));
+                            ans.get(p.lhs).remove("ε");
+                        }
+                    }
+                }
+
+            }
+        }
+        
+
+        return ans;
+
+    }
+    public static HashSet<String> computeFirst(Grammar grammar, String symbol){
+
+        //if symbol is terminal
+        if(grammar.terminals.contains(symbol)){
+            HashSet<String> ans = new HashSet<>();
+            ans.add(symbol);
+            return ans;
+        }
+
+        //if it is non terminal
+        HashSet<String> ans = new HashSet<>();
+        for (Production p : grammar.productions) {
+            if (p.lhs.equals(symbol)) {
+                
+                for (String s : p.rhs) {
+
+                    if(s.equals("id")){ 
+                        ans.addAll(computeFirst(grammar, "id")); 
+                        continue;
+                    }
+                    ans.addAll(computeFirst(grammar, s.substring(0,1)));
+                }
+            }
+        }
+
+        return ans;
     }
 }

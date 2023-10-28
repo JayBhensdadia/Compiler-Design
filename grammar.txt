@@ -1,1 +1,4 @@
-A->ad|a|ab|abc|b
+S->AcB|cbB|Ba
+A->da|BC
+B->g|ε
+C->h|ε

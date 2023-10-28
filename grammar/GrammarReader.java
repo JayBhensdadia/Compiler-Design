@@ -63,7 +63,7 @@ public class GrammarReader {
 
                             //now check wether the ch is 'i' and next character is 'd'
                             //if yes then consider it as single terminal
-                            if(ch=='i' && i<str.length()-1){
+                            if(ch=='i' && i<str.length()-1 && str.charAt(i+1)=='d'){
                                 if(!grammar.terminals.contains("id")){
                                     grammar.terminals.add("id");
                                     i++;

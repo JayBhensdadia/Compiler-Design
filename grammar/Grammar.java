@@ -2,6 +2,7 @@ package grammar;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.HashMap;
 
 /**
  * Grammar
@@ -12,12 +13,16 @@ public class Grammar {
     HashSet<String> nonTerminals;
     ArrayList<Production> productions;
     String startSymbol;
+    HashMap<String,HashSet<String>> firstSets;
+    HashMap<String,HashSet<String>> followSets;
 
     //constructor
     public Grammar(){
         terminals = new HashSet<>();
         nonTerminals = new HashSet<>();
         productions = new ArrayList<>();
+        firstSets = new HashMap<>();
+        followSets = new HashMap<>();
 
     }
 
