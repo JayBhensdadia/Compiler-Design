@@ -6,7 +6,13 @@ public class Runner {
         Grammar grammar = GrammarReader.readGrammarFromFile("grammar.txt");
         grammar.printGrammar();
         
-        GrammarTools.removeLeftRecursion(grammar);
+        //GrammarTools.removeLeftRecursion(grammar);
+        System.out.println("------------------------------------------");
+        GrammarTools.leftFactor(grammar);
+
+
+
+        
 
         grammar.printGrammar();
 

@@ -1,3 +1,1 @@
-E->E+T|T
-T->T*F|F
-F->id|ε
+A->ad|a|ab|abc|b
