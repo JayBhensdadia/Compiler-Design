@@ -241,31 +241,18 @@ public class GrammarTools {
     public static HashMap<String,HashSet<String>> computeFirstSet(Grammar grammar){
 
         HashMap<String,HashSet<String>> ans = new HashMap<>();
+
+        //for all non terminal calculate first(nonterminal)
         for (String nonTerminal : grammar.nonTerminals) {
             ans.put(nonTerminal, computeFirst(grammar, nonTerminal));
         }
-
-        // //verifying
-        for (String nonTerminal : ans.keySet()) {
-            if(ans.get(nonTerminal).contains("ε")){
-
-                for (Production p : grammar.productions) {
-                    
-                    for (String str : p.rhs) {
-                        if(str.substring(0, 1).equals(nonTerminal)){
-                            ans.get(p.lhs).addAll(computeFirst(grammar, str.substring(1, 2)));
-                            ans.get(p.lhs).remove("ε");
-                        }
-                    }
-                }
-
-            }
-        }
-        
+ 
 
         return ans;
 
     }
+
+    
     public static HashSet<String> computeFirst(Grammar grammar, String symbol){
 
         //if symbol is terminal
@@ -277,16 +264,56 @@ public class GrammarTools {
 
         //if it is non terminal
         HashSet<String> ans = new HashSet<>();
+
         for (Production p : grammar.productions) {
+
+            
             if (p.lhs.equals(symbol)) {
                 
+                //for every productions of given non terminal
                 for (String s : p.rhs) {
 
-                    if(s.equals("id")){ 
-                        ans.addAll(computeFirst(grammar, "id")); 
+                    HashSet<String> temp = new HashSet<>();
+
+
+                    //special case if rhs is 'id'
+                    //then compute first(id)
+                    //add it to ans and move on
+                    if(s.equals("id")){
+                        temp = computeFirst(grammar, "id");
+                        ans.addAll(temp);
+                        //ans.addAll(computeFirst(grammar, "id")); 
                         continue;
                     }
-                    ans.addAll(computeFirst(grammar, s.substring(0,1)));
+
+
+                    //compute the first( first character on rhs of '->'' )
+                    temp = computeFirst(grammar, s.substring(0,1));
+
+                    
+                    
+
+                    //if temp contains ε and we know that given symbol is non terminal 
+                    //hence for current production we need to consider the case where nonterminal 
+                    //becomes ε
+                    //and compute first of next symbol
+                    //continue this until you find a terminal or rhs is over
+                    String str = s.substring(1);
+                    while (temp.contains("ε") && str.length()!=0) {
+                        HashSet<String> temp2 = computeFirst(grammar, str.substring(0, 1));
+                        if(temp2.contains("ε")){
+                            temp.addAll(temp2);
+                            str = str.substring(1);
+                        }else{
+                            temp.addAll(temp2);
+                            temp.remove("ε");
+                            break;
+                        }
+                    }
+
+                    ans.addAll(temp);
+                  
+                    
                 }
             }
         }
